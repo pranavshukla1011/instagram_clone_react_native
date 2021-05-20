@@ -1,5 +1,6 @@
 import { auth } from './firebase';
-// -----------------------------------------------------------------------------------------
+import store from './store';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -8,8 +9,9 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 import LandingScreen from './components/auth/Landing';
 import RegisterScreen from './components/auth/Register';
 import LoginScreen from './components/auth/Login';
-import { useAuthState } from 'react-firebase-hooks/auth';
+
 import { useEffect, useState } from 'react';
+import { Provider } from 'react-redux';
 
 const Stack = createStackNavigator();
 
@@ -39,17 +41,19 @@ export default function App() {
   } else {
     if (!loggedIn) {
       return (
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName='landing'>
-            <Stack.Screen
-              name='Landing'
-              component={LandingScreen}
-              options={{ headerShown: false }}
-            ></Stack.Screen>
-            <Stack.Screen name='Register' component={RegisterScreen} />
-            <Stack.Screen name='Login' component={LoginScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <Provider store={store}>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName='landing'>
+              <Stack.Screen
+                name='Landing'
+                component={LandingScreen}
+                options={{ headerShown: false }}
+              ></Stack.Screen>
+              <Stack.Screen name='Register' component={RegisterScreen} />
+              <Stack.Screen name='Login' component={LoginScreen} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </Provider>
       );
     } else {
       return (
