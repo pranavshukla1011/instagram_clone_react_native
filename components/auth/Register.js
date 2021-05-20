@@ -1,4 +1,5 @@
 import { auth } from '../../firebase';
+import firebase from 'firebase';
 
 import React from 'react';
 import { useState } from 'react';
@@ -10,9 +11,21 @@ const Register = () => {
   const [password, setPassword] = useState('');
 
   const onSignUp = () => {
-    auth.createUserWithEmailAndPassword(email, password).catch((err) => {
-      alert(err.message);
-    });
+    auth
+      .createUserWithEmailAndPassword(email, password)
+      .then(() => {
+        firebase
+          .firestore()
+          .collection('users')
+          .doc(firebase.auth().currentUser.uid)
+          .set({
+            name: name,
+            email: email,
+          });
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
   };
 
   return (
