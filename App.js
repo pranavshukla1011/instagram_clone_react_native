@@ -1,14 +1,70 @@
-import { StatusBar } from 'expo-status-bar';
+import { auth } from './firebase';
+// -----------------------------------------------------------------------------------------
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
+import LandingScreen from './components/auth/Landing';
+import RegisterScreen from './components/auth/Register';
+import LoginScreen from './components/auth/Login';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useEffect, useState } from 'react';
+
+const Stack = createStackNavigator();
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+  const [loading, setLoading] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        setLoggedIn(false);
+        setLoading(false);
+      } else {
+        setLoggedIn(true);
+        setLoading(false);
+      }
+    });
+  }, []);
+
+  console.log(loading);
+  if (loading) {
+    return (
+      <View>
+        <Text>Loading....</Text>
+      </View>
+    );
+  } else {
+    if (!loggedIn) {
+      return (
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName='landing'>
+            <Stack.Screen
+              name='Landing'
+              component={LandingScreen}
+              options={{ headerShown: false }}
+            ></Stack.Screen>
+            <Stack.Screen name='Register' component={RegisterScreen} />
+            <Stack.Screen name='Login' component={LoginScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      );
+    } else {
+      return (
+        <View>
+          <Text>User is Logged in</Text>
+          <Button
+            title='Logout'
+            onPress={() => {
+              auth.signOut();
+            }}
+          />
+        </View>
+      );
+    }
+  }
 }
 
 const styles = StyleSheet.create({
