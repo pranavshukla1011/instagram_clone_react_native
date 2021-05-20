@@ -55,9 +55,15 @@ export default function App() {
             </Stack.Navigator>
           </NavigationContainer>
         ) : (
-          <View style={{ flex: '1', justifyContent: 'center' }}>
-            <MainScreen></MainScreen>
-          </View>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName='Main'>
+              <Stack.Screen
+                name='Main'
+                component={MainScreen}
+                options={{ headerShown: false }}
+              ></Stack.Screen>
+            </Stack.Navigator>
+          </NavigationContainer>
         )}
       </Provider>
     );
